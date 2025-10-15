@@ -63,7 +63,6 @@ public class HistorialDeBusquedaEmpleo {
         return candidato.getGenero();
     }
 
-    @Override
     public String toString() {
         return "HistorialDeBusquedaEmpleo{" +
                "idHistorial=" + idHistorial +
@@ -74,3 +73,4 @@ public class HistorialDeBusquedaEmpleo {
                '}';
     }
 }
+
