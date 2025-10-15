@@ -3,16 +3,16 @@ import java.util.Date;
 import java.util.List;
 
 public class HistorialDeBusquedaEmpleo {
-
-    private int idHistorial;                  
-    private int idCandidato;                  
-    private List<String> empresasConsultadas; 
-    private List<String> ofertasAplicadas;    
+    
+    private int idHistorial;
+    private Candidato candidato;o
+    private List<String> empresasConsultadas;
+    private List<String> ofertasAplicadas;
     private Date fechaRegistro;
-
-    public HistorialDeBusquedaEmpleo(int idHistorial, int idCandidato) {
+    
+    public HistorialDeBusquedaEmpleo(int idHistorial, Candidato candidato) {
         this.idHistorial = idHistorial;
-        this.idCandidato = idCandidato;
+        this.candidato = candidato;
         this.empresasConsultadas = new ArrayList<>();
         this.ofertasAplicadas = new ArrayList<>();
         this.fechaRegistro = new Date();
@@ -26,6 +26,15 @@ public class HistorialDeBusquedaEmpleo {
         ofertasAplicadas.add(oferta);
     }
     
+
+    public int getIdHistorial() {
+        return idHistorial;
+    }
+    
+    public Candidato getCandidato() {
+        return candidato;
+    }
+    
     public List<String> getEmpresasConsultadas() {
         return empresasConsultadas;
     }
@@ -34,22 +43,31 @@ public class HistorialDeBusquedaEmpleo {
         return ofertasAplicadas;
     }
     
-    public int getIdHistorial() {
-        return idHistorial;
-    }
-    
-    public int getIdCandidato() {
-        return idCandidato;
-    }
-    
     public Date getFechaRegistro() {
         return fechaRegistro;
     }
     
+    public String getNombreCandidato() {
+        return candidato.getNombre();
+    }
+
+    public int getEdadCandidato() {
+        return candidato.getEdad();
+    }
+
+    public String getDiscapacidadCandidato() {
+        return candidato.getDiscapacidad();
+    }
+
+    public String getGeneroCandidato() {
+        return candidato.getGenero();
+    }
+
+    @Override
     public String toString() {
         return "HistorialDeBusquedaEmpleo{" +
                "idHistorial=" + idHistorial +
-               ", idCandidato=" + idCandidato +
+               ", candidato=" + candidato +
                ", empresasConsultadas=" + empresasConsultadas +
                ", ofertasAplicadas=" + ofertasAplicadas +
                ", fechaRegistro=" + fechaRegistro +
