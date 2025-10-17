@@ -1,77 +1,81 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class Estadisticas {
 
-    private final List<Empresa> empresas;
+    public String ResultadosFiltrado(String tipo, String prestacionStr, String lugar) {
+        StringBuilder resultado = new StringBuilder();
+        List<Empresa> empresas = EmpresaCSV.cargarEmpresas();
+        List<Empresa> filtradas = new ArrayList<>(empresas);
 
-    public Estadisticas() {
-        this.empresas = new ArrayList<>();
-    }
-    public Estadisticas(List<Empresa> empresas) {
-        this.empresas = new ArrayList<>();
-        if (empresas != null) {
-            this.empresas.addAll(empresas.stream()
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList()));
+        if (tipo != null && !tipo.isBlank()) {
+            filtradas = filtrarEmpresasPorTipoDiscapacidad(filtradas, tipo);
+            resultado.append("\nEmpresas que aceptan discapacidad del tipo: ").append(tipo).append("\n");
         }
-    }
-    public void agregarEmpresa(Empresa empresa) {
-        if (empresa != null) {
-            this.empresas.add(empresa);
+
+        if (prestacionStr != null && (prestacionStr.equalsIgnoreCase("true") || prestacionStr.equalsIgnoreCase("false"))) {
+            boolean requierePrestacion = Boolean.parseBoolean(prestacionStr);
+            filtradas = filtrarEmpresasConPrestacionDeLey(filtradas, requierePrestacion);
+            resultado.append("\nEmpresas con prestación de ley = ").append(requierePrestacion).append("\n");
         }
-    }
-    public void agregarEmpresas(List<Empresa> nuevas) {
-        if (nuevas != null) {
-            nuevas.stream().filter(Objects::nonNull).forEach(this.empresas::add);
+
+        if (lugar != null && !lugar.isBlank()) {
+            filtradas = filtrarEmpresasPorLugar(filtradas, lugar);
+            resultado.append("\nEmpresas ubicadas en: ").append(lugar).append("\n");
         }
-    }
-    public List<Empresa> getEmpresas() {
-        return Collections.unmodifiableList(empresas);
-    }
-    public List<Empresa> filtrarEmpresasPorTipoDiscapacidad(String tipo) {
-        if (tipo == null || tipo.isBlank()) return List.of();
 
-        final String needle = normalizar(tipo);
-
-        return empresas.stream()
-                .filter(Objects::nonNull)
-                .filter(e -> {
-                    String raw = e.getTipoDiscapacidadAceptada();
-                    if (raw == null) return false;
-                    String[] partes = raw.split(",");
-                    for (String p : partes) {
-                        if (normalizar(p).equals(needle)) return true;
-                    }
-                    return normalizar(raw).contains(needle);
-                })
-                .collect(Collectors.toList());
-    }
-    public List<Empresa> filtrarEmpresasConPrestacionDeLey(boolean requierePrestacion) {
-        return empresas.stream()
-                .filter(Objects::nonNull)
-                .filter(e -> e.isPrestacionDeLey() == requierePrestacion)
-                .collect(Collectors.toList());
+        resultado.append(mostrarEmpresas(filtradas));
+        return resultado.toString();
     }
 
-    public List<Empresa> filtrarEmpresasPorLugar(String lugar) {
-        if (lugar == null || lugar.isBlank()) return List.of();
-
-        final String needle = normalizar(lugar);
-
-        return empresas.stream()
-                .filter(Objects::nonNull)
-                .filter(e -> {
-                    String l = e.getLugar();
-                    return l != null && normalizar(l).contains(needle);
-                })
-                .collect(Collectors.toList());
+    private List<Empresa> filtrarEmpresasPorTipoDiscapacidad(List<Empresa> lista, String tipo) {
+        List<Empresa> resultado = new ArrayList<>();
+        for (Empresa e : lista) {
+            if (e.getTipoDiscapacidadAceptada().equalsIgnoreCase(tipo)) {
+                resultado.add(e);
+            }
+        }
+        return resultado;
     }
-    private static String normalizar(String s) {
-        return s == null ? "" : s.trim().toLowerCase(Locale.ROOT);
+
+    private List<Empresa> filtrarEmpresasConPrestacionDeLey(List<Empresa> lista, boolean requiere) {
+        List<Empresa> resultado = new ArrayList<>();
+        for (Empresa e : lista) {
+            if (e.isPrestacionDeLey() == requiere) {
+                resultado.add(e);
+            }
+        }
+        return resultado;
+    }
+
+    private List<Empresa> filtrarEmpresasPorLugar(List<Empresa> lista, String lugar) {
+        List<Empresa> resultado = new ArrayList<>();
+        for (Empresa e : lista) {
+            if (e.getLugar().equalsIgnoreCase(lugar)) {
+                resultado.add(e);
+            }
+        }
+        return resultado;
+    }
+
+    private String mostrarEmpresas(List<Empresa> empresas) {
+        if (empresas.isEmpty()) {
+            return "No se encontraron empresas con los criterios dados.\n";
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (Empresa e : empresas) {
+                sb.append("----------------------------------------\n");
+                sb.append("Empresa: ").append(e.getNombreEmpresa()).append("\n");
+                sb.append("Discapacidad aceptada: ").append(e.getTipoDiscapacidadAceptada()).append("\n");
+                sb.append("Horas requeridas: ").append(e.getHorasRequeridas()).append("\n");
+                sb.append("Días: ").append(e.getDias()).append("\n");
+                sb.append("Ascensos: ").append(e.isAscensos() ? "Sí" : "No").append("\n");
+                sb.append("Puesto: ").append(e.getPuesto()).append("\n");
+                sb.append("Salario: ").append(e.getSalario()).append("\n");
+                sb.append("Lugar: ").append(e.getLugar()).append("\n");
+                sb.append("Prestación de ley: ").append(e.isPrestacionDeLey() ? "Sí" : "No").append("\n");
+            }
+            return sb.toString();
+        }
     }
 }
