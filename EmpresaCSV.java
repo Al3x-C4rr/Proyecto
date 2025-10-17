@@ -7,10 +7,10 @@ public class EmpresaCSV {
     // Guarda una lista de empresas en el archivo CSV
     public static void guardarEmpresas(List<Empresa> empresas) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(ARCHIVO))) {
-            // Escribir encabezado
+            
             writer.println("nombreEmpresa,tipoDiscapacidadAceptada,horasRequeridas,dias,ascensos,puesto,salario,lugar,prestacionDeLey");
 
-            // Escribir datos
+           
             for (Empresa e : empresas) {
                 writer.println(String.join(",",
                         e.getNombreEmpresa(),
@@ -67,3 +67,4 @@ public class EmpresaCSV {
         return empresas;
     }
 }
+
