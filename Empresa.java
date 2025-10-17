@@ -25,13 +25,6 @@ public class Empresa {
         this.prestacionDeLey = prestacionDeLey;
     }
 
-    // Métodos
-
-    /**
-     * Registra una nueva oferta laboral.
-     * En un sistema real, esta información se guardaría en una base de datos o colección.
-     * Aquí se simula mostrando la información en consola.
-     */
     public void registrarOferta() {
         System.out.println("=== Registro de Oferta Laboral ===");
         System.out.println("Empresa: " + nombreEmpresa);
@@ -46,10 +39,7 @@ public class Empresa {
         System.out.println("Oferta registrada exitosamente.\n");
     }
 
-    /**
-     * Muestra las ofertas registradas por la empresa.
-     * En un sistema real, podría listar múltiples ofertas.
-     */
+
     public void mostrarOfertas() {
         System.out.println("=== Ofertas de " + nombreEmpresa + " ===");
         System.out.println("Puesto: " + puesto);
@@ -63,9 +53,7 @@ public class Empresa {
         System.out.println();
     }
 
-    // Getters para que otras clases puedan acceder a los atributos
-
-    public String getNombreEmpresa() {
+     public String getNombreEmpresa() {
         return nombreEmpresa;
     }
 
@@ -101,8 +89,7 @@ public class Empresa {
         return prestacionDeLey;
     }
 
-    // Setters en caso de que se necesite modificar atributos después de la creación
-
+ 
     public void setNombreEmpresa(String nombreEmpresa) {
         this.nombreEmpresa = nombreEmpresa;
     }
@@ -134,6 +121,11 @@ public class Empresa {
     public void setLugar(String lugar) {
         this.lugar = lugar;
     }
+
+    public void setPrestacionDeLey(boolean prestacionDeLey) {
+        this.prestacionDeLey = prestacionDeLey;
+    }
+}
 
     public void setPrestacionDeLey(boolean prestacionDeLey) {
         this.prestacionDeLey = prestacionDeLey;
