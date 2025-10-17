@@ -1,76 +1,56 @@
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-public class HistorialDeBusquedaEmpleo {
-    
-    private int idHistorial;
-    private Candidato candidato;o
-    private List<String> empresasConsultadas;
-    private List<String> ofertasAplicadas;
-    private Date fechaRegistro;
-    
-    public HistorialDeBusquedaEmpleo(int idHistorial, Candidato candidato) {
-        this.idHistorial = idHistorial;
-        this.candidato = candidato;
-        this.empresasConsultadas = new ArrayList<>();
-        this.ofertasAplicadas = new ArrayList<>();
-        this.fechaRegistro = new Date();
-    }
-    
-    public void agregarEmpresaConsultada(String empresa) {
-        empresasConsultadas.add(empresa);
-    }
-    
-    public void agregarOfertaAplicada(String oferta) {
-        ofertasAplicadas.add(oferta);
-    }
-    
+public class Historial {
+    private static final String CAN = "Historial.csv";
+    public static void guardarCandidato(List<Candidato> candidatos) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(CAN))) {
+            writer.println("genero, discapacidad, experiencia,EstadoCivil,edad");
+            for (Candidato e : candidatos) {
+                writer.println(String.join(",",
+                        e.getGenero(),
+                        e.getDiscapacidad(),
+                        e.getExperiencia(),
+                        e.getEstadoCivil(),
+                        String.valueOf(e.getEdad())
+                ));
+            }
 
-    public int getIdHistorial() {
-        return idHistorial;
-    }
-    
-    public Candidato getCandidato() {
-        return candidato;
-    }
-    
-    public List<String> getEmpresasConsultadas() {
-        return empresasConsultadas;
-    }
-    
-    public List<String> getOfertasAplicadas() {
-        return ofertasAplicadas;
-    }
-    
-    public Date getFechaRegistro() {
-        return fechaRegistro;
-    }
-    
-    public String getNombreCandidato() {
-        return candidato.getNombre();
+            System.out.println("Datos guardados correctamente en " + CAN);
+        } catch (IOException ex) {
+            System.out.println("Error al guardar el archivo CSV: " + ex.getMessage());
+        }
     }
 
-    public int getEdadCandidato() {
-        return candidato.getEdad();
-    }
+    
+    public static List<Candidato> cargarHistorial() {
+        List<Candidato> candidatos = new ArrayList<>();
 
-    public String getDiscapacidadCandidato() {
-        return candidato.getDiscapacidad();
-    }
+        try (BufferedReader reader = new BufferedReader(new FileReader(CAN))) {
+            String linea;
+            reader.readLine(); // Saltar encabezado
 
-    public String getGeneroCandidato() {
-        return candidato.getGenero();
-    }
+            while ((linea = reader.readLine()) != null) {
+                String[] datos = linea.split(",");
 
-    public String toString() {
-        return "HistorialDeBusquedaEmpleo{" +
-               "idHistorial=" + idHistorial +
-               ", candidato=" + candidato +
-               ", empresasConsultadas=" + empresasConsultadas +
-               ", ofertasAplicadas=" + ofertasAplicadas +
-               ", fechaRegistro=" + fechaRegistro +
-               '}';
+                if (datos.length == 5) {
+                    Candidato e = new Candidato(
+                            datos[0],                     
+                            datos[1],                     
+                            datos[2],                               
+                            datos[3],                     
+                            Integer.parseInt(datos[4]));
+                    candidatos.add(e);
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("No se encontró el archivo CSV. Se creará uno nuevo al guardar.");
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo CSV: " + e.getMessage());
+        }
+
+        return candidatos;
     }
 }
 
