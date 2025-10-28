@@ -1,5 +1,13 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.io.File;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtils;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.chart.JFreeChart;
 
 public class Estadisticas {
 
@@ -25,6 +33,15 @@ public class Estadisticas {
         }
 
         resultado.append(mostrarEmpresas(filtradas));
+
+        // === NUEVO: generar gráfica con los filtros aplicados ===
+        if (!filtradas.isEmpty()) {
+            String mensajeGrafica = generarGraficaConteoPorPuesto(filtradas, tipo, lugar, "graficas/empresas_conteo_puesto.png");
+            resultado.append("\n").append(mensajeGrafica).append("\n");
+        } else {
+            resultado.append("\nNo se generó gráfica porque no hay datos con esos filtros.\n");
+        }
+
         return resultado.toString();
     }
 
@@ -78,4 +95,54 @@ public class Estadisticas {
             return sb.toString();
         }
     }
+
+    // ========= NUEVO: método para generar la gráfica =========
+    private String generarGraficaConteoPorPuesto(List<Empresa> empresas, String tipo, String lugar, String salidaRuta) {
+        // Conteo por puesto con for simple (sin streams)
+        Map<String, Integer> conteo = new HashMap<>();
+        for (Empresa e : empresas) {
+            String p = e.getPuesto();
+            if (!conteo.containsKey(p)) {
+                conteo.put(p, 0);
+            }
+            conteo.put(p, conteo.get(p) + 1);
+        }
+
+        if (conteo.isEmpty()) {
+            return "No hay datos para graficar.";
+        }
+
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        for (Map.Entry<String, Integer> entry : conteo.entrySet()) {
+            dataset.addValue(entry.getValue(), "Ofertas", entry.getKey());
+        }
+
+        String titulo = "Ofertas por Puesto";
+        if (tipo != null && !tipo.isBlank()) {
+            titulo += " | Tipo: " + tipo;
+        }
+        if (lugar != null && !lugar.isBlank()) {
+            titulo += " | Lugar: " + lugar;
+        }
+
+        JFreeChart chart = ChartFactory.createBarChart(
+                titulo,
+                "Puesto",
+                "Cantidad de Ofertas",
+                dataset
+        );
+
+        try {
+            File out = new File(salidaRuta);
+            File carpeta = out.getParentFile();
+            if (carpeta != null && !carpeta.exists()) {
+                carpeta.mkdirs();
+            }
+            ChartUtils.saveChartAsPNG(out, chart, 1100, 600);
+            return "Gráfica generada: " + out.getAbsolutePath();
+        } catch (Exception ex) {
+            return "Error al generar la gráfica: " + ex.getMessage();
+        }
+    }
 }
+
